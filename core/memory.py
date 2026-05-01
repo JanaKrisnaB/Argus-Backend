@@ -6,21 +6,34 @@ Zero LLM API calls — embeddings are local (SentenceTransformer).
 import uuid
 from typing import List
 
-import chromadb
-from sentence_transformers import SentenceTransformer
-
 CHROMA_PATH    = "./chroma_data"
 EMBEDDER_MODEL = "all-MiniLM-L6-v2"
 
-_client   = chromadb.PersistentClient(path=CHROMA_PATH)
-_embedder = SentenceTransformer(EMBEDDER_MODEL)
+# Lazy singletons — loaded on first request, not at startup
+_client   = None
+_embedder = None
+
+
+def _get_client():
+    global _client
+    if _client is None:
+        import chromadb
+        _client = chromadb.PersistentClient(path=CHROMA_PATH)
+    return _client
+
+
+def _get_embedder():
+    global _embedder
+    if _embedder is None:
+        from sentence_transformers import SentenceTransformer
+        _embedder = SentenceTransformer(EMBEDDER_MODEL)
+    return _embedder
 
 
 def _collection(team_id: str):
     """Get or create a per-team ChromaDB collection."""
-    # ChromaDB collection names: alphanumeric + underscores only
     safe_id = team_id.replace("-", "_")
-    return _client.get_or_create_collection(
+    return _get_client().get_or_create_collection(
         name=f"team_{safe_id}",
         metadata={"heuristic": "cosine"},
     )
@@ -31,7 +44,7 @@ def store_comment(team_id: str, code: str, comment: dict) -> None:
     text = f"CODE:\n{code}\nCOMMENT:\n{comment['comment']}"
     col.add(
         ids=[str(uuid.uuid4())],
-        embeddings=[_embedder.encode(text).tolist()],
+        embeddings=[_get_embedder().encode(text).tolist()],
         documents=[text],
         metadatas=[{
             "line":       comment["line"],
@@ -47,7 +60,7 @@ def retrieve_similar(team_id: str, code: str, top_k: int = 3) -> List[dict]:
     if col.count() == 0:
         return []
     results = col.query(
-        query_embeddings=[_embedder.encode(f"CODE:\n{code}").tolist()],
+        query_embeddings=[_get_embedder().encode(f"CODE:\n{code}").tolist()],
         n_results=min(top_k, col.count()),
     )
     memories = [
@@ -83,4 +96,7 @@ def delete_memory(team_id: str, memory_id: str) -> None:
 
 
 def memory_count(team_id: str) -> int:
-    return _collection(team_id).count()
+    try:
+        return _collection(team_id).count()
+    except Exception:
+        return 0
