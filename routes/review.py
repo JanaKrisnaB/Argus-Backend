@@ -2,8 +2,8 @@
 import os
 from fastapi import APIRouter, Depends
 from supabase import create_client
-from schema import ReviewRequest, ReviewResponse
-from auth import get_current_user
+from core.schema import ReviewRequest, ReviewResponse
+from core.auth import get_current_user
 from core.reviewer import run_review
 from dotenv import load_dotenv
 

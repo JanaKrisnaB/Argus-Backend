@@ -3,15 +3,21 @@ main.py — FastAPI application entry point.
 Run: uvicorn main:app --reload --port 8000
 """
 import os
+import sys
+
+# Ensure the backend directory is always in sys.path
+# so 'auth', 'schema', 'core.*' etc. are importable from anywhere
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
+load_dotenv()
+
 from routes.review import router as review_router
 from routes.memory import router as memory_router
 from routes.auth   import router as auth_router
-
-load_dotenv()
 
 app = FastAPI(title="Argus Code Reviewer API", version="1.0.0")
 

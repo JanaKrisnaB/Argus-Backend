@@ -1,6 +1,6 @@
 """routes/auth.py — GET /api/auth/me"""
 from fastapi import APIRouter, Depends
-from auth import get_current_user
+from core.auth import get_current_user
 
 router = APIRouter()
 

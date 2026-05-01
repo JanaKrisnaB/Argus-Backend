@@ -1,5 +1,5 @@
 """
-auth.py — FastAPI dependency for Supabase JWT verification.
+core/auth.py — FastAPI dependency for Supabase JWT verification.
 Set DEV_MODE=true in .env to skip auth during local development.
 """
 import os
@@ -11,7 +11,7 @@ load_dotenv()
 
 SUPABASE_URL         = os.getenv("SUPABASE_URL", "")
 SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY", "")
-DEV_MODE             = os.getenv("DEV_MODE", "true").lower() == "true"
+DEV_MODE             = os.getenv("DEV_MODE", "false").lower() == "true"
 
 DEV_USER = {"id": "dev-user-id", "email": "dev@local.dev"}
 

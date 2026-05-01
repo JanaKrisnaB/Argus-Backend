@@ -1,6 +1,6 @@
 """routes/memory.py — GET/DELETE /api/memory/{team_id}"""
 from fastapi import APIRouter, Depends, HTTPException
-from auth import get_current_user
+from core.auth import get_current_user
 from core.memory import get_all_memories, retrieve_similar, delete_memory, memory_count
 
 router = APIRouter()
