@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+httpx
+python-dotenv
+supabase>=2.0.0
+langchain
+langchain-groq
+langchain-core
+langgraph
+chromadb
+sentence-transformers
+pydantic
+radon
+flake8
