@@ -19,7 +19,7 @@ from core.critic import filter_comments, STORE_THRESHOLD
 
 load_dotenv()
 
-_llm   = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
+_llm   = ChatGroq(model="meta-llama/llama-prompt-guard-2-22m", temperature=0)
 _agent = create_react_agent(_llm, TOOLS)
 
 
